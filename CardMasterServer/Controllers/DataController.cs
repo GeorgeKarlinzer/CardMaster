@@ -21,9 +21,20 @@ namespace CardMaster.Server.Controllers
         }
 
         [Authorize]
-        public string Cards()
+        public async Task<string> Cards()
         {
-            var cards = context.Cards.Where(x => x.Id_Collection == 1);
+            var userId = int.Parse(HttpContext.User.Claims.First().Value);
+            var cards = context.CardCollections.GroupJoin(
+                    context.Cards,
+                    coll => coll.Id,
+                    card => card.Id_Collection,
+                    (coll, cards) => new { coll, cards })
+                .ToList()
+                .Where(x => x.coll.Id_User == userId)
+                .SelectMany(x => x.cards)
+                .ToList();
+
+
             return JsonConvert.SerializeObject(cards);
         }
 

@@ -1,6 +1,7 @@
 using CardMaster.Server;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using System.Web.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 

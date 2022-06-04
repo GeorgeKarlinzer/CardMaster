@@ -40,8 +40,9 @@ namespace CardMaster.Server.Controllers
 
                     return RedirectToAction("Index", "Home");
                 }
-                ModelState.AddModelError("", "Некорректные логин и(или) пароль");
+                ModelState.AddModelError("", "Incorrect username or password");
             }
+
             return View(loginModel);
         }
 
@@ -59,20 +60,20 @@ namespace CardMaster.Server.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = await context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
-                if (user == null)
+                var isTaken = await context.Users.AnyAsync(u => u.Email == model.Email || u.Username == model.Username);
+                if (!isTaken)
                 {
                     var hash = Encryption.CalculatePasswordHash(model.Password, model.Username);
-                    // добавляем пользователя в бд
-                    context.Users.Add(new User { Email = model.Email, PasswordHash = hash });
+
+                    var user = new User { Username = model.Username, Email = model.Email, PasswordHash = hash, Created = DateTime.UtcNow };
+
+                    context.Users.Add(user);
                     await context.SaveChangesAsync();
 
-                    await Authenticate(user.Id); // аутентификация
-
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Login", "Account");
                 }
                 else
-                    ModelState.AddModelError("", "Некорректные логин и(или) пароль");
+                    ModelState.AddModelError("", "Username or Email is already taken");
             }
             return View(model);
         }
