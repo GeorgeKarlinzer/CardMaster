@@ -1,4 +1,5 @@
 ﻿using CardMaster.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -19,11 +20,19 @@ namespace CardMaster.Server.Controllers
             return Json(new {name="Ivan", age=12});
         }
 
+        [Authorize]
         public string Cards()
         {
             var cards = context.Cards.Where(x => x.Id_Collection == 1);
             return JsonConvert.SerializeObject(cards);
         }
+
+        [Authorize]
+        public string Collections()
+        {
+            return "";
+        }
+
 
         private void CreateSampleData()
         {
@@ -64,12 +73,5 @@ namespace CardMaster.Server.Controllers
             context.Cards.Add(newCard);
             context.SaveChanges();
         }
-
-        public string Collections()
-        {
-            return "";
-        }
-
-
     }
 }
