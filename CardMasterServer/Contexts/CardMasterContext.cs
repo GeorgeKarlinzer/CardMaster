@@ -12,7 +12,7 @@ namespace CardMaster.Server
 
         public DbSet<User> Users { get; set; }
         public DbSet<Card> Cards { get; set; }
-        public DbSet<CardCollection> CardsCollections { get; set; }
+        public DbSet<CardCollection> CardCollections { get; set; }
         public DbSet<Word> Words { get; set; }
     }
 }

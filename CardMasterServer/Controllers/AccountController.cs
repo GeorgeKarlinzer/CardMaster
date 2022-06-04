@@ -1,5 +1,10 @@
 ﻿using CardMaster.Data;
+using CardMaster.Server.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace CardMaster.Server.Controllers
 {
@@ -22,14 +27,16 @@ namespace CardMaster.Server.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(User model)
+        public async Task<IActionResult> Login(LoginModel model)
         {
             if (ModelState.IsValid)
             {
-                User user = await context.Users.FirstOrDefaultAsync(u => u.Email == model.Email && u.Password == model.Password);
+                var hash = Encryption.CalculatePasswordHash(model.Password, model.Username);
+                
+                User user = await context.Users.FirstOrDefaultAsync(u => u.Username == model.Username && u.PasswordHash == hash);
                 if (user != null)
                 {
-                    await Authenticate(model.Email); // аутентификация
+                    await Authenticate(model.Username); // аутентификация
 
                     return RedirectToAction("Index", "Home");
                 }
@@ -55,8 +62,9 @@ namespace CardMaster.Server.Controllers
                 User user = await context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
                 if (user == null)
                 {
+                    var hash = Encryption.CalculatePasswordHash(model.Password, model.Username);
                     // добавляем пользователя в бд
-                    context.Users.Add(new User { Email = model.Email, Password = model.Password });
+                    context.Users.Add(new User { Email = model.Email, PasswordHash = hash });
                     await context.SaveChangesAsync();
 
                     await Authenticate(model.Email); // аутентификация

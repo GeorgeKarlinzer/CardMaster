@@ -1,4 +1,4 @@
-using CardMaster.Server.Contexts;
+using CardMaster.Server;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
