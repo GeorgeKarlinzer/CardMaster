@@ -10,6 +10,8 @@ namespace CardMaster.Server.Controllers
     {
         private CardMasterContext context;
 
+        private int UserId => int.Parse(HttpContext.User.Claims.First().Value);
+
         public DataController(CardMasterContext context)
         {
             this.context = context;
@@ -21,27 +23,26 @@ namespace CardMaster.Server.Controllers
         }
 
         [Authorize]
-        public async Task<string> Cards()
+        public string Cards()
         {
-            var userId = int.Parse(HttpContext.User.Claims.First().Value);
-            var cards = context.CardCollections.GroupJoin(
-                    context.Cards,
-                    coll => coll.Id,
-                    card => card.Id_Collection,
-                    (coll, cards) => new { coll, cards })
-                .ToList()
-                .Where(x => x.coll.Id_User == userId)
-                .SelectMany(x => x.cards)
-                .ToList();
+            var test = from collection in context.CardCollections
+                       join card in context.Cards
+                            on collection.Id equals card.Id_Collection
+                       where collection.Id_User == UserId
+                       select new { collection, card };
 
+            var c = test.ToList();
 
-            return JsonConvert.SerializeObject(cards);
+            return JsonConvert.SerializeObject(test.ToList());
         }
 
         [Authorize]
         public string Collections()
         {
-            return "";
+            var collections = context.CardCollections.Where(c => c.Id_User == UserId)
+                .Select(x => new { x.Name, x.IsLearnt });
+
+            return JsonConvert.SerializeObject(collections.ToList());
         }
 
 
