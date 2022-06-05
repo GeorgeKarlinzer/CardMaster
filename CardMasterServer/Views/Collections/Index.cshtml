@@ -1,0 +1,38 @@
+﻿@model IEnumerable<CardMaster.Data.CardCollection>
+
+
+<body>
+    <h1>Collections</h1>
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+    <table>
+        <tr>
+            <th>
+                <label>Name</label>
+            </th>
+            <th>
+                <label>Finished</label>
+            </th>
+        </tr>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(x => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(x => item.IsLearnt)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+						<a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+						<a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+

@@ -1,29 +1,45 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CardMaster.Server.Controllers
 {
     public class CollectionsController : Controller
     {
+        private CardMasterContext context;
+
+        private int UserId => int.Parse(HttpContext.User.Claims.First().Value);
+
+        public CollectionsController(CardMasterContext context)
+        {
+            this.context = context;
+        }
+
         // GET: CollectionsController
+        [Authorize]
         public ActionResult Index()
         {
-            return View();
+            var collections = context.CardCollections.Where(x => x.Id_User == UserId);
+
+            return View(collections);
         }
 
         // GET: CollectionsController/Details/5
+        [Authorize]
         public ActionResult Details(int id)
         {
             return View();
         }
 
         // GET: CollectionsController/Create
+        [Authorize]
         public ActionResult Create()
         {
             return View();
         }
 
         // POST: CollectionsController/Create
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(IFormCollection collection)
@@ -39,6 +55,7 @@ namespace CardMaster.Server.Controllers
         }
 
         // GET: CollectionsController/Edit/5
+        [Authorize]
         public ActionResult Edit(int id)
         {
             return View();
@@ -47,6 +64,7 @@ namespace CardMaster.Server.Controllers
         // POST: CollectionsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public ActionResult Edit(int id, IFormCollection collection)
         {
             try
@@ -60,6 +78,7 @@ namespace CardMaster.Server.Controllers
         }
 
         // GET: CollectionsController/Delete/5
+        [Authorize]
         public ActionResult Delete(int id)
         {
             return View();
@@ -68,6 +87,7 @@ namespace CardMaster.Server.Controllers
         // POST: CollectionsController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public ActionResult Delete(int id, IFormCollection collection)
         {
             try

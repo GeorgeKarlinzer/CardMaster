@@ -17,10 +17,6 @@ namespace CardMaster.Server.Controllers
             this.context = context;
         }
 
-        public IActionResult Index()
-        {
-            return Json(new {name="Ivan", age=12});
-        }
 
         [Authorize]
         public string Cards()
@@ -44,6 +40,13 @@ namespace CardMaster.Server.Controllers
 
             return JsonConvert.SerializeObject(collections.ToList());
         }
+
+        [Authorize]
+        public void ExamplePost()
+        {
+            Console.WriteLine("Post request");
+        }
+
 
 
         private void CreateSampleData()
